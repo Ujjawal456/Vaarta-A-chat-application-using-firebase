@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "395156843885",
+    "project_id": "vaarta-7cf69",
+    "storage_bucket": "vaarta-7cf69.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:395156843885:android:04ccc32ed2eb88aca47e64",
+        "android_client_info": {
+          "package_name": "com.example.vaarta"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "395156843885-ikfdouqdsclgqlm9tbnoiaeaqqchr2co.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB26S69IvWs4Zp5A3QPZSPrx26IhfdJ1us"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "395156843885-ikfdouqdsclgqlm9tbnoiaeaqqchr2co.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
