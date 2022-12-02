@@ -8,6 +8,11 @@
             />
         <item
 
+            android:id="@+id/groupchat"
+            android:title="Group chat"
+            />
+        <item
+
             android:id="@+id/logout"
             android:title="Logout"
             />

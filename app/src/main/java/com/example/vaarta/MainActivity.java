@@ -1,14 +1,13 @@
 package com.example.vaarta;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.vaarta.Adapters.FragmentsAdapter;
 import com.example.vaarta.databinding.ActivityMainBinding;
@@ -45,13 +44,19 @@ public class MainActivity extends AppCompatActivity {
         switch(item.getItemId())
         {
             case R.id.settings:
-                Toast.makeText(this,"Setting Clicked", Toast.LENGTH_SHORT).show();
+                Intent i = new Intent(MainActivity.this, SettingsActivity.class);
+                startActivity(i);
                 break;
 
             case R.id.logout:
                 auth.signOut();
                 Intent intent= new Intent(MainActivity.this, SignInActivity.class);
                 startActivity(intent);
+                break;
+
+            case R.id.groupchat:
+                Intent intentt= new Intent(MainActivity.this, GroupChatActivity.class);
+                startActivity(intentt);
                 break;
 
         }

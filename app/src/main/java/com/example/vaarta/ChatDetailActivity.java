@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.vaarta.Adapters.ChatAdapter;
 import com.example.vaarta.Models.MessageModel;
+import com.example.vaarta.cryptography.AESCryptoChat;
 import com.example.vaarta.databinding.ActivityChatDetailBinding;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -23,7 +24,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class ChatDetailActivity extends AppCompatActivity {
-
+    AESCryptoChat aes = new AESCryptoChat("lv39eptlvuhaqqsr");
     ActivityChatDetailBinding binding;
     FirebaseDatabase database;
     FirebaseAuth auth;
@@ -56,7 +57,7 @@ public class ChatDetailActivity extends AppCompatActivity {
 
         final ArrayList<MessageModel> messageModels = new ArrayList<>();
 
-        final ChatAdapter chatAdapter = new ChatAdapter(messageModels, this );
+        final ChatAdapter chatAdapter = new ChatAdapter(messageModels, this, receiveId  );
         binding.chatRecyclerView.setAdapter(chatAdapter);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -73,6 +74,8 @@ public class ChatDetailActivity extends AppCompatActivity {
                         messageModels.clear();
                         for(DataSnapshot snapshot1: snapshot.getChildren()){
                             MessageModel model = snapshot1.getValue(MessageModel.class);
+                            model.setMessageId((snapshot1).getKey());
+
                             messageModels.add(model);
                         }
                         chatAdapter.notifyDataSetChanged();
@@ -90,7 +93,16 @@ public class ChatDetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String message = binding.etMessage.getText().toString();
-                final MessageModel model = new MessageModel(senderId, message);
+
+                String encryptedMessage = null;
+
+                try {
+                    encryptedMessage = aes.encrypt(message);
+                } catch (Exception e) {
+//            Logger.getLogger(AESCrypt.class.getName()).log(Level.SEVERE, null, e);
+                    e.printStackTrace();
+ }
+                final MessageModel model = new MessageModel(senderId, encryptedMessage);
                 model.setTimestamp(new Date().getTime());
                 binding.etMessage.setText("");
 
@@ -98,13 +110,14 @@ public class ChatDetailActivity extends AppCompatActivity {
                         .push()
                         .setValue(model).addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
-                            public void onSuccess(Void unused) {
+                            public void onSuccess(Void aVoid) {
                                 database.getReference().child("chats")
                                         .child(receiverRoom)
                                         .push()
                                         .setValue(model).addOnSuccessListener(new OnSuccessListener<Void>() {
                                             @Override
-                                            public void onSuccess(Void unused) {
+                                            public void onSuccess(Void aVoid) {
+
 
                                             }
                                         });
