@@ -1,6 +1,5 @@
 package com.example.vaarta;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -22,84 +21,72 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.Date;
 
+public class GroupChatActivity extends AppCompatActivity {
 
-    public class GroupChatActivity extends AppCompatActivity {
+    ActivityGroupChatBinding binding;
 
-        ActivityGroupChatBinding binding;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        binding = ActivityGroupChatBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
-        @Override
-        protected void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            binding = ActivityGroupChatBinding.inflate(getLayoutInflater());
-            setContentView(binding.getRoot());
+        getSupportActionBar().hide();
+        binding.backArrow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent( GroupChatActivity.this, MainActivity.class);
+                startActivity(intent);
+            }
+        });
 
-            getSupportActionBar().hide();
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        final ArrayList<MessageModel>  messageModels = new ArrayList<>();
 
-            binding.backArrow.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent = new Intent(GroupChatActivity.this, MainActivity.class);
-                    startActivity(intent);
+        final String senderId = FirebaseAuth.getInstance().getUid();
+        binding.userName.setText("Friends");
 
-                }
-            });
+        final ChatAdapter adapter = new ChatAdapter(messageModels, this);
+        binding.chatRecyclerView.setAdapter(adapter);
 
-            final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        binding.chatRecyclerView.setLayoutManager(layoutManager);
 
-
-            final ArrayList<MessageModel> messageModels = new ArrayList<>();
-
-            final String senderId = FirebaseAuth.getInstance().getUid();
-
-            binding.userName.setText("Friends");
-
-            final ChatAdapter adapter = new ChatAdapter(messageModels, this);
-            binding.chatRecyclerView.setAdapter(adapter);
-
-            LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-            binding.chatRecyclerView.setLayoutManager(layoutManager);
-
-            database.getReference().child("Group chat")
-                    .addValueEventListener(new ValueEventListener() {
-                        @SuppressLint("NotifyDataSetChanged")
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            messageModels.clear();
-                            for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                                MessageModel model = dataSnapshot.getValue(MessageModel.class);
-                                messageModels.add(model);
+        database.getReference().child("Group chat")
+                        .addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                messageModels.clear();
+                                for(DataSnapshot dataSnapshot : snapshot.getChildren()){
+                                    MessageModel model = dataSnapshot.getValue(MessageModel.class);
+                                    messageModels.add(model);
+                                }
+                                adapter.notifyDataSetChanged();
                             }
-                            adapter.notifyDataSetChanged();
-                        }
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
 
-                        }
-                    });
+                            }
+                        });
 
-            binding.send.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    final String message = binding.etMessage.getText().toString();
-                    final MessageModel model = new MessageModel(senderId, message);
-                    model.setTimestamp(new Date().getTime());
-                    binding.etMessage.setText("");
+        binding.send.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final String message = binding.etMessage.getText().toString();
+                final MessageModel model = new MessageModel(senderId, message);
+                model.setTimestamp(new Date().getTime());
+                binding.etMessage.setText("");
 
-                    database.getReference().child("Group chat")
-                            .push()
-                            .setValue(model).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                                      @Override
-                                                                      public void onSuccess(Void aVoid) {
+                database.getReference().child("Group chat")
+                        .push()
+                        .setValue(model).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void unused) {
 
-                                                                      }
-                                                                  }
-                            );
-
-
-                }
-            });
-
-        }
+                            }
+                        });
+            }
+        });
     }
-
+}
