@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.vaarta.Adapters.ChatAdapter;
 import com.example.vaarta.Models.MessageModel;
+import com.example.vaarta.cryptography.AESCryptoChat;
 import com.example.vaarta.databinding.ActivityGroupChatBinding;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -22,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class GroupChatActivity extends AppCompatActivity {
-
+    AESCryptoChat aes = new AESCryptoChat("lv39eptlvuhaqqsr");
     ActivityGroupChatBinding binding;
 
     @Override
@@ -74,7 +75,15 @@ public class GroupChatActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 final String message = binding.etMessage.getText().toString();
-                final MessageModel model = new MessageModel(senderId, message);
+                String encryptedMessage = null;
+
+                try {
+                    encryptedMessage = aes.encrypt(message);
+                } catch (Exception e) {
+//            Logger.getLogger(AESCrypt.class.getName()).log(Level.SEVERE, null, e);
+                    e.printStackTrace();
+                }
+                final MessageModel model = new MessageModel(senderId, encryptedMessage);
                 model.setTimestamp(new Date().getTime());
                 binding.etMessage.setText("");
 

@@ -89,8 +89,8 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent=new Intent();
-                intent .setAction(Intent.ACTION_GET_CONTENT);
-                intent.setType("image/"); // */
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                intent.setType("image/*"); // */
                 startActivityForResult(intent,33);
 
             }
@@ -103,7 +103,7 @@ public class SettingsActivity extends AppCompatActivity {
         if (data.getData()!=null){
             Uri sFile=data.getData();
             binding.profileImage.setImageURI(sFile);
-            final StorageReference reference=storage.getReference().child("profile pictures")
+            final StorageReference reference=storage.getReference().child("profilepic")
                     .child(FirebaseAuth.getInstance().getUid());
             reference.putFile(sFile).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
